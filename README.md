@@ -3,4 +3,4 @@ An Arduino project based on adding a buzzer to a washer and dryer on the same bo
 
 This project uses the following schematic:
 
-![schematic](/washer dryer buzzer schematic.png)
+![schematic](washer dryer buzzer schematic.png)
