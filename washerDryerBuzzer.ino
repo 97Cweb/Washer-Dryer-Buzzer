@@ -1,16 +1,17 @@
-#include <LowPower.h>
+//#include <LowPower.h>
 
 // MPU-6050 Short Example Sketch
 //www.elegoo.com
 //2016.12.9
 
-#include<Wire.h>
+//#include<Wire.h>
 
 const bool DEBUG=true;
-const int MPU_addr=0x68;  // I2C address of the MPU-6050
+//const int MPU_addr=0x68;  // I2C address of the MPU-6050
 const int lightPin = A0;
 const int dryerSensorPin = A1;
 const int brightnessThreshold=250;
+const float dryerOnThreshold = 450;
 
 bool dryerOn=false;
 bool dryerWasOn=false;
@@ -23,23 +24,28 @@ int Vreadings[numVreadings];
   
 void setup(){
   //setup serial communication with gyroscope
-  Wire.begin();
-  Wire.beginTransmission(MPU_addr);
-  Wire.write(0x6B);  // PWR_MGMT_1 register
-  Wire.write(0);     // set to zero (wakes up the MPU-6050)
-  Wire.endTransmission(true);
+  //Wire.begin();
+  //Wire.beginTransmission(MPU_addr);
+  //Wire.write(0x6B);  // PWR_MGMT_1 register
+  //Wire.write(0);     // set to zero (wakes up the MPU-6050)
+  //Wire.endTransmission(true);
   Serial.begin(9600);
+  
 
   for(int i=0;i<numVreadings;i++){
     Vreadings[i]=0;
   }
   Serial.println("Start");
+
+  tone(8,640,2000);
+  delay(4000);
+  Serial.println("buzzed");
 }
 void loop(){
   updateDryer();
   updateWasher();  
   Serial.flush();
-  LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);  
+  //LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);  
 }
 
 
@@ -62,7 +68,7 @@ bool isDryerOn(){
     Serial.println("RMS: "+String(rmsAvg));
     }
   
-  if (rmsAvg>550.0){
+  if (rmsAvg>dryerOnThreshold){
     return true;
   }
   else{
@@ -76,7 +82,7 @@ void updateDryer(){
   }
   dryerOn=isDryerOn();
   
-  if(DEBUG)  Serial.println("Dryer "+dryerOn);
+  if(DEBUG)  Serial.println("Dryer "+String(dryerOn));
 
   if(!dryerOn && dryerWasOn){
     tone(8,512,2000);
